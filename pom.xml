@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.computoring</groupId>
   <artifactId>gop</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.5</version>
 
   <name>Groovy Option Parser</name>
   <description>A replacement for CliBuilder with obvious usage.</description>
