@@ -2,10 +2,9 @@ package org.computoring.gop
 
 /**
  * Groovy Option Parser
- * 
- * GOP is inspired by the excellent ruby option parser clip (http://github.com/alexvollmer/clip).  Clip favors
- * easily creating options and easily using the parsed values.
  *
+ * GOP is a command line option parser.  GOP is an alternative to CliBuilder.
+ * 
  * An example:
  *  def parser = new org.computoring.gop.Parser(description: "An example parser.")
  *  parser.required('f', 'foo-bar', [description: 'The foo-bar option'])
@@ -24,24 +23,6 @@ package org.computoring.gop
  *  assert params.count instanceof Integer
  *  assert params.i == 123
  *  assert parser.remainder.join(' ') == 'some other stuff'
- *                                                                                                                                   
- *  System.out << parser.usage() // will spit out a usage statement like this:
- *
- *  An example parser.
- *
- *  Required
- *  --------
- *  -f, --foo-bar           The foo-bar option
- *  -i, --count             A required, validated option
- *
- *  Optional
- *  --------
- *  -b, --bar-baz  [xyz]    The optional bar-baz option with a default of "xyz"
- *
- *  Flags
- *  -----
- *  -c             [false]  
- *  -d, --debug    [true]   
  *
  */
 public class Parser {
