@@ -6,9 +6,20 @@
   <version>0.6-SNAPSHOT</version>
 
   <name>Groovy Option Parser</name>
-  <description>A replacement for CliBuilder with obvious usage.</description>
-  <url></url>
+  <description>GOP is a command line option parser for groovy.</description>
+  <url>http://code.google.com/p/groovy-option-parser/</url>
   <inceptionYear>2008</inceptionYear>
+
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/groovy-option-parser/issues</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:svn:http://groovy-option-parser.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:http://groovy-option-parser.googlecode.com/svn/trunk</developerConnection>
+    <url>http://groovy-option-parser.googlecode.com/svn/trunk</url>
+  </scm>
 
   <developers>
     <developer>
@@ -31,6 +42,7 @@
       <groupId>org.codehaus.groovy.maven.runtime</groupId>
       <artifactId>gmaven-runtime-default</artifactId>
       <version>1.0-rc-3</version>
+      <scope>compile</scope>
     </dependency> 
   </dependencies>
 
