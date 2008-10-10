@@ -52,7 +52,27 @@ public class Parser {
   def parameters = [:]
   def remainder = []
 
-  def required( shortName, longName, Map opts = [:]) { required( shortName, [longName: longName] + opts) }
+  /**
+   * Add a required option to the parser.
+   * Parameters must be supplied for each required option at parsing time.
+   *
+   * @param shortName
+   *        A single character name to use with for this option
+   *
+   * @param longName
+   *        A long name to use for this option.  Long names can be anything, but you
+   *        have to follow groovy rules of map key referencing, namely quoting anything
+   *        that isn't a simple string (i.e. params.'long-option')
+   *
+   * @param opts
+   *        A map of additional options for this option.  Recognized options include:
+   *        validate: {Closure} -- A closure that will be passed the parameter supplied for this
+   *                               option.  The return value of closure is the final value of
+   *                               the parameter.  This is useful for conversions and validations.
+   */
+  def required( shortName, longName, Map opts = [:]) {
+    required( shortName, [longName: longName] + opts)
+  }
   def required( shortName, Map opts = [:]) {
     if( opts.default ) {
       throw new IllegalArgumentException( "Default values don't make sense for required options" )
@@ -60,12 +80,16 @@ public class Parser {
     addOption( shortName, 'required', opts )
   }
 
-  def optional( shortName, longName, Map opts = [:] ) { optional( shortName, [longName: longName] + opts ) }
+  def optional( shortName, longName, Map opts = [:] ) {
+    optional( shortName, [longName: longName] + opts )
+  }
   def optional( shortName, Map opts = [:] ) {
     addOption( shortName, 'optional', opts )
   }
 
-  def flag( shortName, longName, Map opts = [:] ) { flag( shortName, [longName: longName] + opts ) }
+  def flag( shortName, longName, Map opts = [:] ) {
+    flag( shortName, [longName: longName] + opts )
+  }
   def flag( shortName, Map opts = [:] ) {
     opts.default = ( opts.default ) ? true : false
     addOption( shortName, 'flag', opts )
