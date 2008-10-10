@@ -95,3 +95,14 @@ scenario "parsing supplied flag set parameter to true", {
   }
 }
 
+scenario "validating a flag parameter", {
+  given "a new parser", { parser = new Parser() }
+  and "a flag option 'f' with a validation closure that returns a string", {
+    parser.flag( 'f', [validate: { "abc" }] )
+  }
+  when "parsing '-f'", { params = parser.parse( "-f".split() ) }
+  then "parameters 'f' should be true", {
+    params.f.shouldBe( true )
+  }
+}
+
