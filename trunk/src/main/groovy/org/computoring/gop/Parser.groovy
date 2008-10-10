@@ -47,7 +47,9 @@ package org.computoring.gop
  */
 public class Parser {
 
+  /** A property describing this option parser.  Displayed in usage statement. */
   def description
+
   def options = [:]
   def parameters = [:]
   def remainder = []
@@ -212,7 +214,11 @@ public class Parser {
    * short and optionally its long name.
    *
    * @param args
-   *        Typically 
+   *        Typically, an array of command line arguments.  Can be any Iterable. 
+   *
+   * @return Map
+   *         A map of parsed parameters.  Each option that is mapped to a parameter will have an
+   *         entry for its shortName and additionally for its longName if specified.
    */
   Map parse( args ) {
     // add defaults
@@ -259,7 +265,18 @@ public class Parser {
     return parameters
   }
 
-  def usage( errorMsg = null ) {
+  /**
+   * Returns a formatted String describing this parser's options with their default values and
+   * descriptions.
+   *
+   * Note that effort is made to align defaults and descriptinos vertically.  This can be a bit
+   * wonky if you supply a large default or description.
+   *
+   * @param errorMsg
+   *        When supplied, errorMsg will be displayed at the beginning of the usage message.
+   *        Useful for reporting exceptions during parsing or values that fail option validation.
+   */
+  String usage( errorMsg = null ) {
     def buffer = new StringWriter()
     def writer = new PrintWriter( buffer )
 
@@ -276,6 +293,7 @@ public class Parser {
     def longestName = 5 + options.inject( 0 ) { max, entry -> 
       entry.value.longName ? Math.max( max, entry.value.longName.size() ) : max
     }
+
     def longestDefault = 5 + options.inject( 0 ) { max, entry -> 
       def x = entry.value.default
       (x && x.metaClass.respondsTo(x, "size")) ? Math.max( max, x.size() ) : max
