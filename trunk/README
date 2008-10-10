@@ -1,14 +1,13 @@
-Groovy Option Parser
+=Groovy Option Parser=
 
 GOP is a command line option parsing alternative to CliBuilder.
 
-I (Travis Hume <travis@computoring.org>) wrote GOP for a couple reasons:
-* Needed a small project to learn groovy
-* Replicate the option parsing behaviour of the excellent Ruby library, clip (http://github.com/alexvollmer/clip/tree/master).
-  Clip makes it simple to define options and simple to use the parsed parameters.
+I wrote GOP for a couple reasons:
+ * Needed a small project to learn groovy
+ * Replicate the option parsing behaviour of the excellent Ruby library, [http://github.com/alexvollmer/clip/tree/master. clip].  Clip makes it simple to define options and simple to use the parsed parameters.
 
-An example is the easiest explanation:
-
+==An example is the easiest explanation==
+{{{
  def parser = new org.computoring.gop.Parser(description: "An example parser.")
  parser.required('f', 'foo-bar', [description: 'The foo-bar option'])
  parser.optional('b', [longName: 'bar-baz', default: 'xyz', description: 'The optional bar-baz option with a default of "xyz"'])
@@ -26,7 +25,9 @@ An example is the easiest explanation:
  assert params.count instanceof Integer
  assert params.i == 123
  assert parser.remainder.join(' ') == 'some other stuff'
-                                                                                                                                  
+}}}
+                         
+{{{
  System.out << parser.usage() // will spit out a usage statement like this:
 
  An example parser.
@@ -44,18 +45,18 @@ An example is the easiest explanation:
  -----
  -c             [false]  
  -d, --debug    [true]   
+}}}
 
 --------------------------------------------------------------------------------
 
-A couple interesting features:
-* Flag and optional options can have default values
-* Options can specify a validation closure that parsed values are passed through
-* Formatted usage statement is created for you.
+==A couple interesting features==
+ * Flag and optional options can have default values
+ * Options can specify a validation closure that parsed values are passed through
+ * Formatted usage statement is created for you.
 
+*Drop me a note at travis@computoring.org if it's working for you or if it isn't.*
 
-Drop me a note at travis@computoring.org if it's working for you or if it isn't.
-
-Homepage:      http://code.google.com/p/groovy-option-parser/
-Downloads:     http://code.google.com/p/groovy-option-parser/downloads/list
-Issue tracker: http://code.google.com/p/groovy-option-parser/issues/list
+ * Homepage:      http://code.google.com/p/groovy-option-parser/
+ * Downloads:     http://code.google.com/p/groovy-option-parser/downloads/list
+ * Issue tracker: http://code.google.com/p/groovy-option-parser/issues/list
 
