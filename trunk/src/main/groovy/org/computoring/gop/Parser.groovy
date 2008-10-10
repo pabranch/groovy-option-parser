@@ -2,7 +2,6 @@ package org.computoring.gop
 
 /**
  * Groovy Option Parser
- * (not affiliated with the Grand Old Party)
  * 
  * GOP is inspired by the excellent ruby option parser clip (http://github.com/alexvollmer/clip).  Clip favors
  * easily creating options and easily using the parsed values.
@@ -72,7 +71,7 @@ public class Parser {
    *                               option.  The return value of the closure is the final value of
    *                               the parameter.  This is useful for conversions and validations.
    */
-  def required( shortName, Map opts = [:] ) {
+  def required( String shortName, Map opts = [:] ) {
     if( opts.default ) {
       throw new IllegalArgumentException( "Default values don't make sense for required options" )
     }
@@ -80,26 +79,10 @@ public class Parser {
   }
 
   /**
-   * Add a required option to the parser.
-   * Parameters must be supplied for each required option at parsing time.
-   *
-   * @param shortName
-   *        A single character name to use with for this option
-   *
-   * @param longName
-   *        A long name to use for this option.  Long names can be anything, but you
-   *        have to follow groovy rules of map key referencing, namely quoting anything
-   *        that isn't a simple string (i.e. params.'long-option')
-   *
-   * @param opts
-   *        A map of additional options for this option.  Recognized options include:
-   *        description: String -- A string describing this option.  This description will be used to create a
-   *                               usage statement.
-   *        validate: {Closure} -- A closure that will be passed the parameter supplied for this
-   *                               option.  The return value of the closure is the final value of
-   *                               the parameter.  This is useful for conversions and validations.
+   * A convienence method for required( shortName, [longName: name] ).
+   * @see #required( String, Map )
    */
-  def required( shortName, longName, Map opts = [:] ) {
+  def required( String shortName, String longName, Map opts = [:] ) {
     required( shortName, [longName: longName] + opts )
   }
 
@@ -124,34 +107,15 @@ public class Parser {
    *                               option.  The return value of the closure is the final value of
    *                               the parameter.  This is useful for conversions and validations.
    */
-  def optional( shortName, Map opts = [:] ) {
+  def optional( String shortName, Map opts = [:] ) {
     addOption( shortName, 'optional', opts )
   }
 
   /**
-   * Add an optional option to the parser.
-   * Parameters are not required to be supplied for optional options at parsing time.  Additionally, optional
-   * options may have a default value.
-   *
-   * @param shortName
-   *        A single character name to use with for this option
-   *
-   * @param longName
-   *        A long name to use for this option.  Long names can be anything, but you
-   *        have to follow groovy rules of map key referencing, namely quoting anything
-   *        that isn't a simple string (i.e. params.'long-option')
-   *
-   * @param opts
-   *        A map of additional options for this option.  Recognized options include:
-   *        default: value      -- A default value to return if none is provided.  Note that the a default value
-   *                               is processed by the validate closure is one is specified.
-   *        description: String -- A string describing this option.  This description will be used to create a
-   *                               usage statement.
-   *        validate: {Closure} -- A closure that will be passed the parameter supplied for this
-   *                               option.  The return value of the closure is the final value of
-   *                               the parameter.  This is useful for conversions and validations.
+   * A convienence method for optional( shortName, [longName: name] ).
+   * @see #optional( String, Map )
    */
-  def optional( shortName, longName, Map opts = [:] ) {
+  def optional( String shortName, String longName, Map opts = [:] ) {
     optional( shortName, [longName: longName] + opts )
   }
 
@@ -176,35 +140,16 @@ public class Parser {
    *                               option.  The return value of the closure is evaluated as true or false and assigned
    *                               to the parameter.
    */
-  def flag( shortName, Map opts = [:] ) {
+  def flag( String shortName, Map opts = [:] ) {
     opts.default = ( opts.default ) ? true : false
     addOption( shortName, 'flag', opts )
   }
 
   /**
-   * Add a flag option to the parser.
-   * Flags are boolean options that do not accept a value during parsing.  Flags are false by default and specifying
-   * them during parsing will make them true.  Default value can be changed to true, see below.
-   *
-   * @param shortName
-   *        A single character name to use with for this option
-   *
-   * @param longName
-   *        A long name to use for this option.  Long names can be anything, but you
-   *        have to follow groovy rules of map key referencing, namely quoting anything
-   *        that isn't a simple string (i.e. params.'long-option')
-   *
-   * @param opts
-   *        A map of additional options for this option.  Recognized options include:
-   *        default: value      -- The default value will be true or false depending on the 
-   *                               truthiness of the supplied value.
-   *        description: String -- A string describing this option.  This description will be used to create a
-   *                               usage statement.
-   *        validate: {Closure} -- A closure that will be passed the parameter supplied for this
-   *                               option.  The return value of the closure is evaluated as true or false and assigned
-   *                               to the parameter.
+   * A convienence method for flag( shortName, [longName: name] ).
+   * @see #flag( String, Map )
    */
-  def flag( shortName, longName, Map opts = [:] ) {
+  def flag( String shortName, String longName, Map opts = [:] ) {
     flag( shortName, [longName: longName] + opts )
   }
 

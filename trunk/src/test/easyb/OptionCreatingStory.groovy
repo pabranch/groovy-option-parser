@@ -84,3 +84,34 @@ scenario "duplicate options not allowed", {
   }
 }
 
+scenario "hyphenated long name", {
+  given "a new parser", { parser = new Parser() }
+  and "a required option with a longName of 'foo-bar'", {
+    parser.required( 'f', 'foo-bar' )
+  }
+  then "options should contain 'f' and 'foo-bar'", {
+    ensure( parser.options ) {
+      contains( 'f' )
+      contains( 'foo-bar' )
+    }
+  }
+  and "option 'f' == option 'foo-bar'", {
+    parser.options.f.shouldBe( parser.options.'foo-bar' )
+  }
+}
+
+scenario "long name with spaces", {
+  given "a new parser", { parser = new Parser() }
+  and "a required option with a longName of 'foo bar'", {
+    parser.required( 'f', 'foo bar' )
+  }
+  then "options should contain 'f' and 'foo bar'", {
+    ensure( parser.options ) {
+      contains( 'f' )
+      contains( 'foo bar' )
+    }
+  }
+  and "option 'f' == option 'foo bar'", {
+    parser.options.f.shouldBe( parser.options.'foo bar' )
+  }
+}
