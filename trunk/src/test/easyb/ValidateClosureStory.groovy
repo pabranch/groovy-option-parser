@@ -1,4 +1,5 @@
 import org.computoring.gop.Parser
+import org.computoring.gop.GOPException
 
 scenario "validate value is not a closure", {
   given "a Parser", {
@@ -13,7 +14,7 @@ scenario "validate value is not a closure", {
   }
 
   then "an exception should be thrown", {
-    ensureThrows( IllegalArgumentException.class ) {
+    ensureThrows( GOPException.class ) {
       action()
     }
   }

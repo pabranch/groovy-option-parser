@@ -16,9 +16,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://groovy-option-parser.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://groovy-option-parser.googlecode.com/svn/trunk/</developerConnection>
-    <url>http://code.google.com/p/groovy-option-parser/source/browse/trunk/</url>
+    <connection>scm:svn:https://groovy-option-parser.googlecode.com/svn</connection>
+    <developerConnection>scm:svn:https://groovy-option-parser.googlecode.com/svn</developerConnection>
+    <url>http://code.google.com/p/groovy-option-parser/source/browse/trunk</url>
   </scm>
 
   <developers>

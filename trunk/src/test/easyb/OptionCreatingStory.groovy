@@ -1,4 +1,5 @@
 import org.computoring.gop.Parser
+import org.computoring.gop.GOPException
 
 description "Scenarios to validate the creation of options"
 
@@ -67,7 +68,7 @@ scenario "required options cannot have default values", {
     action = { parser.required( 'f', [default: 'bar']) }
   }
   then "an exception should be thrown", {
-    ensureThrows( IllegalArgumentException.class ) { action() }
+    ensureThrows( GOPException.class ) { action() }
   }
 }
 
@@ -80,7 +81,7 @@ scenario "duplicate options not allowed", {
     action = { parser.required( 'f' ) }
   }
   then "an exception should be thrown", {
-    ensureThrows( IllegalArgumentException.class ) { action() }
+    ensureThrows( GOPException.class ) { action() }
   }
 }
 
