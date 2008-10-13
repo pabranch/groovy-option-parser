@@ -1,4 +1,5 @@
 import org.computoring.gop.Parser
+import org.computoring.gop.GOPException
 
 description "Scenarios to validate the parsing of options"
 
@@ -10,7 +11,7 @@ scenario "invalid option parsing", {
   }
   when "parsing '-f --bar'", { action = { parser.parse( '-f --bar'.split() )}}
   then "an exception should be thrown because option 'f' is not a flag", {
-    ensureThrows( IllegalArgumentException.class ) { action () }
+    ensureThrows( GOPException.class ) { action () }
   }
 }
 
@@ -73,7 +74,7 @@ scenario "missing required parameter", {
   and "a required option 'f'", { parser.required( 'f' ) }
   when "parsing ''", { action = { parser.parse( [] ) }}
   then "an exception should be thrown", {
-    ensureThrows( Exception.class ) { action() }
+    ensureThrows( GOPException.class ) { action() }
   }
 }
 
