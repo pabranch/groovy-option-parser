@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.computoring</groupId>
   <artifactId>gop</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.7</version>
 
   <name>Groovy Option Parser</name>
   <description>GOP is a command line option parser for groovy.</description>
@@ -16,9 +16,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://groovy-option-parser.googlecode.com/svn</connection>
-    <developerConnection>scm:svn:https://groovy-option-parser.googlecode.com/svn</developerConnection>
-    <url>http://code.google.com/p/groovy-option-parser/source/browse</url>
+    <connection>scm:svn:https://groovy-option-parser.googlecode.com/svn/tags/gop-0.7</connection>
+    <developerConnection>scm:svn:https://groovy-option-parser.googlecode.com/svn/tags/gop-0.7</developerConnection>
+    <url>http://code.google.com/p/groovy-option-parser/source/browse/tags/gop-0.7</url>
   </scm>
 
   <developers>
