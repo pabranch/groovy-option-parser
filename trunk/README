@@ -1,6 +1,6 @@
 =Groovy Option Parser=
 
-GOP is a command line option parsing alternative to CliBuilder.
+GOP is a command line option parsing alternative to !CliBuilder.
 
 I wrote GOP for a couple reasons:
  * Needed a small project to learn groovy
@@ -9,14 +9,23 @@ I wrote GOP for a couple reasons:
 ==An example is the easiest explanation==
 {{{
  def parser = new org.computoring.gop.Parser(description: "An example parser.")
- parser.required('f', 'foo-bar', [description: 'The foo-bar option'])
- parser.optional('b', [longName: 'bar-baz', default: 'xyz', description: 'The optional bar-baz option with a default of "xyz"'])
- parser.flag('c')
- parser.flag('d', 'debug', [default: true])
- parser.required('i', 'count', [description: 'A required, validated option', validate: {
-   Integer.parseInt(it)
- }])
-                                                                                                                                 
+ parser.with {
+   required 'f', 'foo-bar', [description: 'The foo-bar option'] 
+   optional 'b', [
+     longName: 'bar-baz', 
+     default: 'xyz', 
+     description: 'The optional bar-baz option with a default of "xyz"'
+   ]
+   flag 'c' 
+   flag 'd', 'debug', [default: true] 
+   required 'i', 'count', [
+     description: 'A required, validated option', 
+     validate: {
+       Integer.parseInt it 
+     }
+   ] 
+ }
+
  def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
  assert params.'foo-bar' == 'foo_value'
  assert params.b == 'xyz'
