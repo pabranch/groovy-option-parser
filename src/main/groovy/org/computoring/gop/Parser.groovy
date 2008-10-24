@@ -7,14 +7,23 @@ package org.computoring.gop
  * 
  * An example:
  *  def parser = new org.computoring.gop.Parser(description: "An example parser.")
- *  parser.required('f', 'foo-bar', [description: 'The foo-bar option'])
- *  parser.optional('b', [longName: 'bar-baz', default: 'xyz', description: 'The optional bar-baz option with a default of "xyz"'])
- *  parser.flag('c')
- *  parser.flag('d', 'debug', [default: true])
- *  parser.required('i', 'count', [description: 'A required, validated option', validate: {
- *    Integer.parseInt(it)
- *  }])
- *                                                                                                                                  
+ *  parser.with {
+ *    required 'f', 'foo-bar', [description: 'The foo-bar option'] 
+ *    optional 'b', [
+ *      longName: 'bar-baz', 
+ *      default: 'xyz', 
+ *      description: 'The optional bar-baz option with a default of "xyz"'
+ *    ]
+ *    flag 'c' 
+ *    flag 'd', 'debug', [default: true] 
+ *    required 'i', 'count', [
+ *      description: 'A required, validated option', 
+ *      validate: {
+ *        Integer.parseInt it 
+ *      }
+ *    ] 
+ *  }                                                                                                                                                                                                             
+ *
  *  def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
  *  assert params.'foo-bar' == 'foo_value'
  *  assert params.b == 'xyz'
@@ -156,45 +165,51 @@ public class Parser {
    */
   Map parse( args ) {
     // add defaults
-    parameters = options.inject( [:] ) { map, entry ->
-      if( entry.value.default != null ) map[entry.key] = entry.value.default
+    parameters = options.inject( [:] ) { map, option ->
+      if( option.value.default != null ) map[option.key] = option.value.default
       map
     }
 
-    def option = null
+    def PARAM_NAME = ~/^(-[^-]|--.+)$/
+    def parameter = null
     args.each { arg ->
       // options can't look like -foo
       if( arg =~ ~/^-[^-].+/ ) {
-        throw new GOPException( "Illegal option [$arg], short options must be a single character" )
+        throw new GOPException( "Illegal parameter [$arg], short options must be a single character" )
       }
 
-      if( arg =~ ~/^(-[^-]|--.+)$/ ) {
-        if( option ) {
-          throw new GOPException( "Illegal value [$arg] supplied for option ${option.shortName}" )
+      if( arg =~ PARAM_NAME ) {
+        if( parameter ) {
+          throw new GOPException( "Illegal value [$arg] supplied for parameter ${parameter.shortName}" )
         }
 
         def name = arg.replaceFirst( /--?/, '' )
         if( !options.containsKey( name )) {
-          throw new GOPException( "unknown option $arg" )
+          throw new GOPException( "unknown parameter $arg" )
         }
 
-        option = options[name]
-        if( option.type == 'flag' ) {
-          addParameter(option, true)
-          option = null
+        parameter = options[name]
+        if( parameter.type == 'flag' ) {
+          addParameter( parameter, true )
+          parameter = null
         }
       }
-      else if( option ) {
-        addParameter(option, arg)
-        option = null
+      else if( parameter ) {
+        addParameter( parameter, arg )
+        parameter = null
       }
       else {
         if( !( arg == '--' )) remainder << arg
       }
     }
 
-    def missing = ( requiredOptions.keySet() - parameters.keySet() )
-    if( missing ) throw new GOPException( "Missing required parameters: ${missing.collect { "-$it" }}" )
+    if( missingOptions ) {
+      throw new GOPException( "missing required options" )
+    }
+
+    if( errorOptions ) {
+      throw new GOPException( "validation errors" )
+    }
 
     return parameters
   }
@@ -206,16 +221,36 @@ public class Parser {
    * Note that effort is made to align defaults and descriptinos vertically.  This can be a bit
    * wonky if you supply a large default or description.
    *
-   * @param errorMsg
-   *        When supplied, errorMsg will be displayed at the beginning of the usage message.
+   * @param message
+   *        When supplied, message will be displayed at the beginning of the usage message.
    *        Useful for reporting exceptions during parsing or values that fail option validation.
    */
-  String usage( errorMsg = null ) {
+  String usage( message = null ) {
     def buffer = new StringWriter()
     def writer = new PrintWriter( buffer )
 
-    if( errorMsg ) {
-      writer.println( "Error: $errorMsg" )
+    if( message ) {
+      writer.println( message.toString() )
+      writer.println()
+    }
+
+    if( missingOptions || errorOptions ) {
+      if( missingOptions ) {
+        writer.println( "Missing required parameters: " )
+        missingOptions.each {
+          def o = options[it]
+          writer.println( "   ${( o.description ) ? "-$o.shortName $o.description" : "-$o.shortName"}" )
+        }
+      }
+
+      if( errorOptions ) {
+        writer.println( "" )
+        writer.println( "Validation errors: " )
+        errorOptions.each {
+          writer.println( "   -$it.shortName : $it.error.message" )
+        }
+      }
+
       writer.println()
     }
 
@@ -224,12 +259,12 @@ public class Parser {
       writer.println()
     }
 
-    def longestName = 5 + options.inject( 0 ) { max, entry -> 
-      entry.value.longName ? Math.max( max, entry.value.longName.size() ) : max
+    def longestName = 5 + options.inject( 0 ) { max, option -> 
+      option.value.longName ? Math.max( max, option.value.longName.size() ) : max
     }
 
-    def longestDefault = 5 + options.inject( 0 ) { max, entry -> 
-      def x = entry.value.default
+    def longestDefault = 5 + options.inject( 0 ) { max, option -> 
+      def x = option.value.default
       (x && x.metaClass.respondsTo(x, "size")) ? Math.max( max, x.size() ) : max
     }
 
@@ -254,13 +289,29 @@ public class Parser {
     return buffer.toString()
   }
 
-  private def addParameter(option, value) {
-    if( option.validate ) {
-      value = option.validate( value )
-      if( option.type == 'flag' ) value = value ? true : false
+  private def getMissingOptions() {
+    requiredOptions.keySet() - parameters.keySet()
+  }
+
+  private def getErrorOptions() {
+    options.values().findAll { it.error } as Set
+  }
+
+  private def addParameter( parameter, value ) {
+    if( parameter.validate ) {
+      try {
+        value = parameter.validate( value )
+        if( parameter.type == 'flag' ) value = value ? true : false
+      }
+      catch( Throwable t ) {
+        def x = options[parameter.shortName]
+        x.error = t
+        value = null
+      }
     }
-    parameters[option.shortName] = value
-    if( option.longName ) parameters[option.longName] = value
+
+    parameters[parameter.shortName] = value
+    if( parameter.longName ) parameters[parameter.longName] = value
   }
 
   private def getRequiredOptions() {
@@ -276,8 +327,8 @@ public class Parser {
   }
 
   private def findOptions( type ) {
-    options.inject( [:] ) { map, entry ->
-      if( entry.value.type == type ) map[entry.value.shortName] = entry.value
+    options.inject( [:] ) { map, option ->
+      if( option.value.type == type ) map[option.value.shortName] = option.value
       map
     }
   }
@@ -308,15 +359,5 @@ public class Parser {
   }
 
   private setOptions( arg ) {}
-}
-
-class GOPException extends RuntimeException {
-  GOPException( String message ) {
-    super( message )
-  }
-
-  GOPException( String message, Throwable cause ) {
-    super( message, cause )
-  }
 }
 

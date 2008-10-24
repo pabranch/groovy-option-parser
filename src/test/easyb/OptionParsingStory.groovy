@@ -36,7 +36,9 @@ scenario "remainder set after encountering --", {
 scenario "parsing set parameters for short and long names", {
   given "a new parser", { parser = new Parser() }
   and "an option 'f' with long name 'foo'", { parser.optional( 'f', 'foo' ) }
-  when "parsing '-f bar'", { params = parser.parse( '-f bar'.split() )}
+  when "parsing '-f bar'", {
+    params = parser.parse( '-f bar'.split() )
+  }
   then "both 'f' & 'foo' parameters should be created", {
     ensure( params ) {
       contains( 'f' )
