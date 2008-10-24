@@ -229,7 +229,7 @@ public class Parser {
    *        When supplied, message will be displayed at the beginning of the usage message.
    *        Useful for reporting exceptions during parsing or values that fail option validation.
    */
-  String usage() {
+  String getUsage() {
     def buffer = new StringWriter()
     def writer = new PrintWriter( buffer )
 
@@ -239,7 +239,7 @@ public class Parser {
       if( missing ) {
         writer.println( "Missing required parameters" )
         missing.each {
-          writer.println( "   ${( it.description ) ? "-$it.shortName $it.description" : "-$it.shortName"}" )
+          writer.println( "  ${( it.description ) ? "-$it.shortName $it.description" : "-$it.shortName"}" )
         }
       }
 
@@ -247,7 +247,7 @@ public class Parser {
         writer.println( "" )
         writer.println( "Validation errors" )
         errors.each {
-          writer.println( "   -$it.shortName : $it.error.message" )
+          writer.println( "  -$it.shortName : $it.error.message" )
         }
       }
 
@@ -361,5 +361,6 @@ public class Parser {
   }
 
   private setOptions( arg ) {}
+  private setUsage( arg ) {}
 }
 
