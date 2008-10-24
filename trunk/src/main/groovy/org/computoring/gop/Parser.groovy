@@ -225,33 +225,29 @@ public class Parser {
    *        When supplied, message will be displayed at the beginning of the usage message.
    *        Useful for reporting exceptions during parsing or values that fail option validation.
    */
-  String usage( message = null ) {
+  String usage() {
     def buffer = new StringWriter()
     def writer = new PrintWriter( buffer )
 
-    if( message ) {
-      writer.println( message.toString() )
-      writer.println()
-    }
-
-    if( missingOptions || errorOptions ) {
-      if( missingOptions ) {
-        writer.println( "Missing required parameters: " )
-        missingOptions.each {
-          def o = options[it]
-          writer.println( "   ${( o.description ) ? "-$o.shortName $o.description" : "-$o.shortName"}" )
+    def missing = missingOptions
+    def errors = errorOptions
+    if( missing || errors ) {
+      if( missing ) {
+        writer.println( "Missing required parameters" )
+        missing.each {
+          writer.println( "   ${( it.description ) ? "-$it.shortName $it.description" : "-$it.shortName"}" )
         }
       }
 
-      if( errorOptions ) {
+      if( errors ) {
         writer.println( "" )
-        writer.println( "Validation errors: " )
-        errorOptions.each {
+        writer.println( "Validation errors" )
+        errors.each {
           writer.println( "   -$it.shortName : $it.error.message" )
         }
       }
 
-      writer.println()
+      writer.println( "\n" )
     }
 
     if( description ) {
@@ -268,11 +264,10 @@ public class Parser {
       (x && x.metaClass.respondsTo(x, "size")) ? Math.max( max, x.size() ) : max
     }
 
-    def pattern = "%s%-${longestName}s %-${longestDefault}s %s"
+    def pattern = "  %s%-${longestName}s %-${longestDefault}s %s"
     ['Required': requiredOptions, 'Optional': optionalOptions, 'Flags': flagOptions].each { header, map ->
       if( map ) {
         writer.println( header )
-        writer.println( "-"*header.size() )
         map.each { name, opts ->
           def shortName = "-$opts.shortName"
           def longName = opts.longName ? ", --$opts.longName" : ""
@@ -290,7 +285,10 @@ public class Parser {
   }
 
   private def getMissingOptions() {
-    requiredOptions.keySet() - parameters.keySet()
+    (requiredOptions.keySet() - parameters.keySet()).inject( [] ) {list, it ->
+      list << options[it]
+      list
+    }
   }
 
   private def getErrorOptions() {
