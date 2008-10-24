@@ -43,6 +43,8 @@ public class Parser {
   def parameters = [:]
   def remainder = []
 
+  private def parseCalled
+
   /**
    * Add a required option to the parser.
    * Parameters must be supplied for each required option at parsing time.
@@ -164,6 +166,8 @@ public class Parser {
    * @throws GOPException
    */
   Map parse( args ) {
+    parseCalled = true
+
     // add defaults
     parameters = options.inject( [:] ) { map, option ->
       if( option.value.default != null ) map[option.key] = option.value.default
@@ -231,7 +235,7 @@ public class Parser {
 
     def missing = missingOptions
     def errors = errorOptions
-    if( missing || errors ) {
+    if( parseCalled && (missing || errors )) {
       if( missing ) {
         writer.println( "Missing required parameters" )
         missing.each {
