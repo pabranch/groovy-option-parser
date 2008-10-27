@@ -247,7 +247,7 @@ public class Parser {
         writer.println( "" )
         writer.println( "Validation errors" )
         errors.each {
-          writer.println( "  -$it.shortName : $it.error.message" )
+          writer.println( "  -$it.shortName : ${it.error.toString()}" )
         }
       }
 
