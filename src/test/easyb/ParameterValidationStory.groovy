@@ -1,4 +1,5 @@
 import org.computoring.gop.Parser
+import org.computoring.gop.GOPException
 
 scenario "validator is applied to parameter", {
   given "a new parser", { parser = new Parser() }
@@ -11,6 +12,23 @@ scenario "validator is applied to parameter", {
   }
 }
 
+scenario "validating integers are positive", {
+  given "a new parser", { parser = new Parser() }
+  and "a required option 'i' having a validator that rejects negative numbers", {
+    parser.required( 'i', [
+      validate: {
+        def i = new Integer(it)
+        if( i < 0 ) throw new IllegalArgumentException("supplied paramter $it is negative")
+        i
+      }
+    ])
+  }
+  when "parsing '-i -1'", { action = { parser.parse("-i -1".split()) }}
+  then "An GOPException should be thrown", {
+    ensureThrows( GOPException ) { action() }
+  }
+}
+
 scenario "converted parameter is returned", {
   given "a new parser", { parser = new Parser() }
   and "an optional option 'i' having a validator that converts the value to an int", {
@@ -20,4 +38,5 @@ scenario "converted parameter is returned", {
   then "parameter i should by of type Integer", { params.i.shouldBeAn( Integer ) }
   and "parameter i should be 10", { params.i.shouldBe( 10 ) }
 }
+
 

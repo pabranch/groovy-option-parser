@@ -24,7 +24,7 @@ scenario "unchecked exceptions during validation should be rethrown as a GOPExce
     parser = new Parser()
   }
   and "a required option with validation that throws a RuntimeException", {
-    parser.required( 'x', [validate: { throw new Exception( "test message" )}])
+    parser.required( 'x', [validate: { throw new IllegalArgumentException( "test message" )}])
   }
 
   when "parsing '-x foo'", {
@@ -35,6 +35,9 @@ scenario "unchecked exceptions during validation should be rethrown as a GOPExce
     ensureThrows( GOPException.class ) {
       action()
     }
+  }
+  and "params.x.error should be IllegalArgumentException", {
+    parser.options.x.error.shouldBeAn( IllegalArgumentException )
   }
 }
 
