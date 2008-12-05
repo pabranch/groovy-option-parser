@@ -177,14 +177,17 @@ public class Parser {
     def PARAM_NAME = ~/^(-[^-]|--.+)$/
     def parameter = null
     args.each { arg ->
-      // options can't look like -foo
-      if( arg =~ ~/^-[^-].+/ ) {
-        throw new GOPException( "Illegal parameter [$arg], short options must be a single character" )
+      if( remainder ) { 
+        remainder << arg
       }
-
-      if( arg =~ PARAM_NAME ) {
-        if( parameter ) {
-          throw new GOPException( "Illegal value [$arg] supplied for parameter ${parameter.shortName}" )
+      else if( parameter ) {
+        addParameter( parameter, arg )
+        parameter = null
+      }
+      else if( arg =~ PARAM_NAME ) {
+        // options can't look like -foo
+        if( arg =~ ~/^-[^-].+/ ) {
+          throw new GOPException( "Illegal parameter [$arg], short options must be a single character" )
         }
 
         def name = arg.replaceFirst( /--?/, '' )
@@ -197,10 +200,6 @@ public class Parser {
           addParameter( parameter, true )
           parameter = null
         }
-      }
-      else if( parameter ) {
-        addParameter( parameter, arg )
-        parameter = null
       }
       else {
         if( !( arg == '--' )) remainder << arg

@@ -3,15 +3,28 @@ import org.computoring.gop.GOPException
 
 description "Scenarios to validate the parsing of options"
 
-scenario "invalid option parsing", {
+scenario "when non parameter is encountered adds it and everthing else to the remainder", {
+  given "a new parser", { parser = new Parser() }
+  and "a flag option f", {
+    parser.flag( 'f' )
+  }
+  and "an optional option x", {
+    parser.optional( 'x' )
+  }
+  when "parsing '-f bar -x baz'", { params = parser.parse( '-f bar -x baz'.split() )}
+  then "the remainder should be [bar,-x,baz]", {
+    parser.remainder.shouldBe( ['bar','-x','baz'] )
+  }
+}
+
+scenario "non-flag option values can begin with dashes", {
   given "a new parser", { parser = new Parser() }
   and "an optional options 'f' & 'bar'", {
     parser.optional( 'f' )
-    parser.optional( 'b', 'bar' )
   }
-  when "parsing '-f --bar'", { action = { parser.parse( '-f --bar'.split() )}}
-  then "an exception should be thrown because option 'f' is not a flag", {
-    ensureThrows( GOPException.class ) { action () }
+  when "parsing '-f -bar'", { params = parser.parse( '-f -bar'.split()) }
+  then "parameter f should == '-bar'", {
+    params.f.shouldBe( "-bar" )
   }
 }
 
