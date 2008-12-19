@@ -24,6 +24,11 @@ I wrote GOP for a couple reasons:
        Integer.parseInt it 
      }
    ] 
+
+   // require a remainder
+   remainder {
+     if(!it) throw new IllegalArgumentException("missing command")
+   }
  }
 
  def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())

@@ -3,6 +3,17 @@ import org.computoring.gop.GOPException
 
 description "Scenarios to validate the parsing of options"
 
+scenario "remainder can be validated", {
+  given "a new parser", { parser = new Parser() }
+  and "a remainder validation closure requiring a remainder be present", {
+    parser.remainder { if(!it) throw new Exception() }
+  }
+  when "parsing ''", { action = { parser.parse([]) }}
+  then "an exception should be thrown", {
+    ensureThrows( GOPException.class ) { action() }
+  }
+}
+
 scenario "when non parameter is encountered adds it and everthing else to the remainder", {
   given "a new parser", { parser = new Parser() }
   and "a flag option f", {
