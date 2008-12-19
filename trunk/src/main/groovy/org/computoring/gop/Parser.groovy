@@ -42,6 +42,7 @@ public class Parser {
   def options = [:]
   def parameters = [:]
   def remainder = []
+  def remainderValidator
 
   private def parseCalled
 
@@ -151,6 +152,10 @@ public class Parser {
     flag( shortName, [longName: longName] + opts )
   }
 
+  def remainder( Closure validator ) {
+    this.remainderValidator = validator
+  }
+
   /**
    * Apply configured options to the supplied args returning a map of parameters.
    * Each option that is mapped to a parameter is available in the returned map in its
@@ -212,6 +217,15 @@ public class Parser {
 
     if( errorOptions ) {
       throw new GOPException( "validation errors" )
+    }
+
+    if( remainderValidator ) {
+      try {
+        remainder = remainderValidator(remainder)
+      }
+      catch( Throwable t ) {
+        throw new GOPException( "error validating remainder: $remainder", t)
+      }
     }
 
     return parameters
