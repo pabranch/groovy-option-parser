@@ -28,6 +28,7 @@ I wrote GOP for a couple reasons:
    // require a remainder
    remainder {
      if(!it) throw new IllegalArgumentException("missing command")
+     it
    }
  }
 

@@ -22,6 +22,10 @@ package org.computoring.gop
  *        Integer.parseInt it 
  *      }
  *    ] 
+ *    remainder {
+ *      assert it
+ *      it
+ *    }
  *  }                                                                                                                                                                                                             
  *
  *  def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
@@ -152,6 +156,13 @@ public class Parser {
     flag( shortName, [longName: longName] + opts )
   }
 
+  /**
+   * Define a validation closure for the remainder.
+   *
+   * @param validator -- A closure that will be passed the remainder after parameter parsing is complete.
+   *                     The return value of the closure is the final value of the remainder.
+   *                     This is useful for conversions and validations.
+   */
   def remainder( Closure validator ) {
     this.remainderValidator = validator
   }
