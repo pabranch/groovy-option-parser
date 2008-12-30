@@ -1,4 +1,5 @@
 #summary GOP has a maven repository
+#labels Featured,Phase-Deploy,maven
 
 = Now it's even easier to use GOP =
 
