@@ -38,6 +38,8 @@ package org.computoring.gop
  *  assert params.i == 123
  *  assert parser.remainder.join(' ') == 'some other stuff'
  * </pre>
+ *
+ * @author Travis Hume (travis@computoring.org)
  */
 public class Parser {
 
