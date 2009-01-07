@@ -3,7 +3,7 @@ package org.computoring.gop
 /**
  * Groovy Option Parser
  *
- * GOP is a command line option parser.  GOP is an alternative to CliBuilder.
+ * GOP is a command line option parser alternative to CliBuilder.
  * 
  * An example:
  *  def parser = new org.computoring.gop.Parser(description: "An example parser.")
@@ -43,12 +43,19 @@ public class Parser {
   /** A property describing this option parser.  Displayed in usage statement. */
   def description
 
+  /**
+   * A property specifying the max width for option defaults when formatting
+   * the usage statement.
+   */
+  int defaultValueWidth = 30
+
   def options = [:]
   def parameters = [:]
   def remainder = []
-  def remainderValidator
 
-  private def parseCalled
+  private Closure remainderValidator
+  private Throwable remainderError
+  private boolean parseCalled
 
   /**
    * Add a required option to the parser.
@@ -184,12 +191,6 @@ public class Parser {
   Map parse( args ) {
     parseCalled = true
 
-    // add defaults
-    parameters = options.inject( [:] ) { map, option ->
-      if( option.value.default != null ) map[option.key] = option.value.default
-      map
-    }
-
     def PARAM_NAME = ~/^(-[^-]|--.+)$/
     def parameter = null
     args.each { arg ->
@@ -235,7 +236,8 @@ public class Parser {
         remainder = remainderValidator(remainder)
       }
       catch( Throwable t ) {
-        throw new GOPException( "error validating remainder: $remainder", t)
+        remainderError = t
+        throw new GOPException( "remainder validation error", t)
       }
     }
 
@@ -259,7 +261,7 @@ public class Parser {
 
     def missing = missingOptions
     def errors = errorOptions
-    if( parseCalled && (missing || errors )) {
+    if( parseCalled && (missing || errors || remainderError)) {
       if( missing ) {
         writer.println( "Missing required parameters" )
         missing.each {
@@ -275,13 +277,16 @@ public class Parser {
         }
       }
 
+      if( remainderError ) {
+        writer.println( "" )
+        writer.println( "Remainder validation error" )
+        writer.println( "  $remainderError" )
+      }
+
       writer.println( "\n" )
     }
 
-    if( description ) {
-      writer.println( description )
-      writer.println()
-    }
+    if( description ) writer.println( description )
 
     def longestName = 5 + options.inject( 0 ) { max, option -> 
       option.value.longName ? Math.max( max, option.value.longName.size() ) : max
@@ -292,7 +297,7 @@ public class Parser {
       (x && x.metaClass.respondsTo(x, "size")) ? Math.max( max, x.size() ) : max
     }
 
-    def pattern = "  %s%-${longestName}s %-${longestDefault}s %s"
+    def pattern = "  %s%-${longestName}s %-${longestDefault}s %s\n"
     ['Required': requiredOptions, 'Optional': optionalOptions, 'Flags': flagOptions].each { header, map ->
       if( map ) {
         writer.println( header )
@@ -300,9 +305,11 @@ public class Parser {
           def shortName = "-$opts.shortName"
           def longName = opts.longName ? ", --$opts.longName" : ""
           def defaultValue = (opts.default || opts.type == 'flag') ? "[${opts.default.toString()}]" : ""
+          if(defaultValue.size() > defaultValueWidth) {
+            defaultValue = "[${defaultValue[1..defaultValueWidth]}...]"
+          }
           def description = opts.description ?: ""
           writer.printf( pattern, shortName, longName, defaultValue, description)
-          writer.println()
         }
       }
 
@@ -382,6 +389,11 @@ public class Parser {
     opts.shortName = shortName
     options[shortName] = opts
     if( opts.longName ) options[opts.longName] = opts
+
+    // create parameters for options with defaults
+    if(opts.containsKey("default")) {
+      addParameter(options[shortName], opts.default)
+    }
   }
 
   private setOptions( arg ) {}

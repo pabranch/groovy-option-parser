@@ -86,6 +86,21 @@ scenario "default returned when option not specified", {
   }
 }
 
+scenario "default values can be overridden", {
+  given "a new parser", { parser = new Parser() }
+  and "an option with a default", {
+    parser.optional( 'f', [default: 'bar'] )
+  }
+
+  when "parsing '-f baz'", {
+    params = parser.parse( "-f baz".split() )
+  }
+
+  then "params.f should be baz", {
+    params.f.shouldBe( "baz" )
+  }
+}
+
 scenario "pasing optional set parameter to supplied value", {
   given "a new parser", { parser = new Parser() }
   and "an optional option 'f'", { parser.optional( 'f' ) }
