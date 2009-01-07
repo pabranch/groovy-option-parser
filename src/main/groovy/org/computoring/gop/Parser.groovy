@@ -273,7 +273,6 @@ public class Parser {
       }
 
       if( errors ) {
-        writer.println( "" )
         writer.println( "Validation errors" )
         errors.each {
           writer.println( "  -$it.shortName : ${it.error.toString()}" )
@@ -281,12 +280,11 @@ public class Parser {
       }
 
       if( remainderError ) {
-        writer.println( "" )
         writer.println( "Remainder validation error" )
         writer.println( "  $remainderError" )
       }
 
-      writer.println( "\n" )
+      writer.println( "" )
     }
 
     if( description ) writer.println( description )
@@ -314,9 +312,9 @@ public class Parser {
           def description = opts.description ?: ""
           writer.printf( pattern, shortName, longName, defaultValue, description)
         }
-      }
 
-      writer.println()
+        writer.println()
+      }
     }
 
     return buffer.toString()
