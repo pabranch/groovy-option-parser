@@ -1,5 +1,4 @@
 import org.computoring.gop.Parser
-import org.computoring.gop.GOPException
 
 description "Scenarios to validate the parsing of options"
 
@@ -10,7 +9,7 @@ scenario "remainder can be validated", {
   }
   when "parsing ''", { action = { parser.parse([]) }}
   then "an exception should be thrown", {
-    ensureThrows( GOPException.class ) { action() }
+    ensureThrows( Exception.class ) { action() }
   }
 }
 
@@ -115,7 +114,7 @@ scenario "missing required parameter", {
   and "a required option 'f'", { parser.required( 'f' ) }
   when "parsing ''", { action = { parser.parse( [] ) }}
   then "an exception should be thrown", {
-    ensureThrows( GOPException.class ) { action() }
+    ensureThrows( Exception.class ) { action() }
   }
 }
 

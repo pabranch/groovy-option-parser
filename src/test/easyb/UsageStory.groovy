@@ -1,5 +1,4 @@
 import org.computoring.gop.Parser
-import org.computoring.gop.GOPException
 
 scenario "usage should not list missing required options if parse hasn't been called", {
   given "a Parser", {
@@ -52,7 +51,7 @@ scenario "usage should report missing required options", {
   }
 
   when "parsing ''", {
-    ensureThrows( GOPException ) {
+    ensureThrows( Exception ) {
       parser.parse( '' )
     }
   }
@@ -71,7 +70,7 @@ scenario "usage should report validation errors", {
   }
 
   when "parsing '-f foo'", {
-    ensureThrows( GOPException ) {
+    ensureThrows( Exception ) {
       parser.parse( '-f foo'.split() )
     }
   }
@@ -90,7 +89,7 @@ scenario "usage should report remainder validation errors", {
   }
 
   when "parsing ''", {
-    ensureThrows( GOPException ) {
+    ensureThrows( Exception ) {
       parser.parse( ''.split() )
     }
   }
