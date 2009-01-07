@@ -6,6 +6,7 @@ package org.computoring.gop
  * GOP is a command line option parser alternative to CliBuilder.
  * 
  * An example:
+ * <pre>
  *  def parser = new org.computoring.gop.Parser(description: "An example parser.")
  *  parser.with {
  *    required 'f', 'foo-bar', [description: 'The foo-bar option'] 
@@ -36,7 +37,7 @@ package org.computoring.gop
  *  assert params.count instanceof Integer
  *  assert params.i == 123
  *  assert parser.remainder.join(' ') == 'some other stuff'
- *
+ * </pre>
  */
 public class Parser {
 

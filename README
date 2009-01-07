@@ -43,7 +43,7 @@ I wrote GOP for a couple reasons:
 }}}
                          
 {{{
- System.out << parser.usage() // will spit out a usage statement like this:
+ System.out << parser.usage // will spit out a usage statement like this:
 
 An example parser.
 
@@ -64,6 +64,7 @@ Flags
 ==A couple interesting features==
  * Flag and optional options can have default values
  * Options can specify a validation closure that parsed values are passed through
+ * remaining parameters after parsing can be validated
  * Formatted usage statement is created for you.
 
 *Drop me a note at travis@computoring.org if it's working for you or if it isn't.*
