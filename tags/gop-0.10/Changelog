@@ -1,0 +1,14 @@
+0.10
+implement #7 - remove GOPException in favor of plain ol' Exception
+fix #6 - limit length of default value in usage statement
+fix #5 - default values now validated (if validator defined)
+fix #4 - remainder validation errors now reported in usage statement
+
+0.9
+fix #2 - parameters beginning with dashes are not allowed
+implement #3 - support remainder validation
+validation errors now print full Throwable.toString() message
+
+0.8
+Made usage a GroovyBean and it no longer accepts an optional message.
+
