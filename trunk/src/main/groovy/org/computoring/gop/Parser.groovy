@@ -76,11 +76,11 @@ public class Parser {
    *                               option.  The return value of the closure is the final value of
    *                               the parameter.  This is useful for conversions and validations.
    *
-   * @throws GOPException
+   * @throws Exception
    */
   def required( String shortName, Map opts = [:] ) {
     if( opts.default ) {
-      throw new GOPException( "Default values don't make sense for required options" )
+      throw new Exception( "Default values don't make sense for required options" )
     }
     addOption( shortName, 'required', opts )
   }
@@ -114,7 +114,7 @@ public class Parser {
    *                               option.  The return value of the closure is the final value of
    *                               the parameter.  This is useful for conversions and validations.
    *
-   * @throws GOPException
+   * @throws Exception
    */
   def optional( String shortName, Map opts = [:] ) {
     addOption( shortName, 'optional', opts )
@@ -149,7 +149,7 @@ public class Parser {
    *                               option.  The return value of the closure is evaluated as true or false and assigned
    *                               to the parameter.
    *
-   * @throws GOPException
+   * @throws Exception
    */
   def flag( String shortName, Map opts = [:] ) {
     opts.default = ( opts.default ) ? true : false
@@ -187,7 +187,7 @@ public class Parser {
    *         A map of parsed parameters.  Each option that is mapped to a parameter will have an
    *         entry for its shortName and additionally for its longName if specified.
    *
-   * @throws GOPException
+   * @throws Exception
    */
   Map parse( args ) {
     parseCalled = true
@@ -205,12 +205,12 @@ public class Parser {
       else if( arg =~ PARAM_NAME ) {
         // options can't look like -foo
         if( arg =~ ~/^-[^-].+/ ) {
-          throw new GOPException( "Illegal parameter [$arg], short options must be a single character" )
+          throw new Exception( "Illegal parameter [$arg], short options must be a single character" )
         }
 
         def name = arg.replaceFirst( /--?/, '' )
         if( !options.containsKey( name )) {
-          throw new GOPException( "unknown parameter $arg" )
+          throw new Exception( "unknown parameter $arg" )
         }
 
         parameter = options[name]
@@ -225,11 +225,11 @@ public class Parser {
     }
 
     if( missingOptions ) {
-      throw new GOPException( "missing required options" )
+      throw new Exception( "missing required options" )
     }
 
     if( errorOptions ) {
-      throw new GOPException( "validation errors" )
+      throw new Exception( "validation errors" )
     }
 
     if( remainderValidator ) {
@@ -238,7 +238,7 @@ public class Parser {
       }
       catch( Throwable t ) {
         remainderError = t
-        throw new GOPException( "remainder validation error", t)
+        throw new Exception( "remainder validation error", t)
       }
     }
 
@@ -371,19 +371,19 @@ public class Parser {
     opts = opts ?: [:]
 
     if( !shortName ) {
-      throw new GOPException( "Option name cannot not be null" )
+      throw new Exception( "Option name cannot not be null" )
     }
 
     if( options[shortName] ) {
-      throw new GOPException( "Dup option specified: $shortName" )
+      throw new Exception( "Dup option specified: $shortName" )
     }
 
     if( shortName.size() != 1 ) {
-      throw new GOPException( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
+      throw new Exception( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
     }
 
     if( opts.validate && !(opts.validate instanceof Closure) ) {
-      throw new GOPException( "Invalid validate option, must be a Closure" )
+      throw new Exception( "Invalid validate option, must be a Closure" )
     }
 
     opts.type = type ?: 'optional'

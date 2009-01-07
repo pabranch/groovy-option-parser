@@ -1,5 +1,4 @@
 import org.computoring.gop.Parser
-import org.computoring.gop.GOPException
 
 scenario "validator is applied to parameter", {
   given "a new parser", { parser = new Parser() }
@@ -24,8 +23,8 @@ scenario "validating integers are positive", {
     ])
   }
   when "parsing '-i -1'", { action = { parser.parse("-i -1".split()) }}
-  then "An GOPException should be thrown", {
-    ensureThrows( GOPException ) { action() }
+  then "An Exception should be thrown", {
+    ensureThrows( Exception ) { action() }
   }
 }
 

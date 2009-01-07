@@ -1,5 +1,4 @@
 import org.computoring.gop.Parser
-import org.computoring.gop.GOPException
 
 scenario "validate value is a closure", {
   given "a Parser", {
@@ -13,13 +12,13 @@ scenario "validate value is a closure", {
   }
 
   then "an exception should be thrown", {
-    ensureThrows( GOPException.class ) {
+    ensureThrows( Exception.class ) {
       action()
     }
   }
 }
 
-scenario "unchecked exceptions during validation should be rethrown as a GOPException", {
+scenario "unchecked exceptions during validation should be rethrown as a Exception", {
   given "a Parser", {
     parser = new Parser()
   }
@@ -31,8 +30,8 @@ scenario "unchecked exceptions during validation should be rethrown as a GOPExce
     action = { parser.parse( "-x foo".split() )}
   }
 
-  then "a GOPException should be thrown", {
-    ensureThrows( GOPException.class ) {
+  then "a Exception should be thrown", {
+    ensureThrows( Exception.class ) {
       action()
     }
   }
