@@ -81,3 +81,35 @@ scenario "usage should report validation errors", {
   }
 }
 
+scenario "usage should report remainder validation errors", {
+  given "a Parser", {
+    parser = new Parser()
+  }
+  and "a required remainder", {
+    parser.remainder { throw new Exception( "error message" ) }
+  }
+
+  when "parsing ''", {
+    ensureThrows( GOPException ) {
+      parser.parse( ''.split() )
+    }
+  }
+
+  then "usage should report a remainder validation error", {
+    (parser.usage =~ ~/(?ms)^Remainder validation error.*^  java.lang.Exception: error message/ ).count.shouldBe( 1 )
+  }
+}
+
+scenario "default values should be limited to 30 characters", {
+  given "a Parser", {
+    parser = new Parser()
+  }
+  and "an option with a default value of 50 characters", {
+    parser.optional( 'x', [default: "x"*50])
+  }
+
+  then "usage report should list x's default as 30 characters", {
+    (parser.usage =~ ~/(?ms).*-x\s+\[${"x"*30}\.\.\.\]/).count.shouldBe(1)
+  }
+}
+

@@ -39,4 +39,13 @@ scenario "converted parameter is returned", {
   and "parameter i should be 10", { params.i.shouldBe( 10 ) }
 }
 
+scenario "default values should be validated", {
+  given "a new parser", { parser = new Parser() }
+  and "an option with a default value and a validator", {
+    parser.optional( 'i', [default: "123", validate: { Integer.parseInt( it ) }] )
+  }
 
+  when "parsing ''", { params = parser.parse( ''.split() )}
+
+  then "parameter i should by of type Integer", { params.i.shouldBeAn( Integer ) }
+}
