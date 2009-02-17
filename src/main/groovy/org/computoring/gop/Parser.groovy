@@ -240,11 +240,11 @@ public class Parser {
     }
 
     if( missingOptions ) {
-      throw new Exception( "missing required options" )
+      throw new Exception( "Required parameters not provided" )
     }
 
     if( errorOptions ) {
-      throw new Exception( "validation errors" )
+      throw new Exception( "Validation errors" )
     }
 
     if( remainderValidator ) {
@@ -253,7 +253,7 @@ public class Parser {
       }
       catch( Throwable t ) {
         remainderError = t
-        throw new Exception( "remainder validation error", t)
+        throw new Exception( "Remainder validation error", t)
       }
     }
 
@@ -263,7 +263,7 @@ public class Parser {
       }
       catch( Throwable t ) {
         postParseError = t
-        throw new Exception( "post parse validation failure", t )
+        throw new Exception( "Post parsing validation failure", t )
       }
     }
 
