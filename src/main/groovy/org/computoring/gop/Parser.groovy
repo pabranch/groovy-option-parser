@@ -57,7 +57,9 @@ public class Parser {
   def remainder = []
 
   private Closure remainderValidator
+  private Closure postParseValidator
   private Throwable remainderError
+  private Throwable postParseError
   private boolean parseCalled
 
   /**
@@ -178,6 +180,17 @@ public class Parser {
   }
 
   /**
+   * Define a post parse validation closure.
+   * After parsing, this Closure will be ran and the parsed parameters passed to it.  Useful
+   * for validating inter-option dependencies (e.g. must specify --this or --that)
+   * 
+   * @param validator -- A Closure that will be passed the parsed parameters.
+   */
+  def validate( Closure validator ) {
+    this.postParseValidator = validator
+  }
+
+  /**
    * Apply configured options to the supplied args returning a map of parameters.
    * Each option that is mapped to a parameter is available in the returned map in its
    * short and optionally its long name.
@@ -244,6 +257,16 @@ public class Parser {
       }
     }
 
+    if( postParseValidator ) {
+      try {
+        postParseValidator( parameters )
+      }
+      catch( Throwable t ) {
+        postParseError = t
+        throw new Exception( "post parse validation failure", t )
+      }
+    }
+
     return parameters
   }
 
@@ -264,7 +287,7 @@ public class Parser {
 
     def missing = missingOptions
     def errors = errorOptions
-    if( parseCalled && (missing || errors || remainderError)) {
+    if( parseCalled && (missing || errors || remainderError || postParseError)) {
       if( missing ) {
         writer.println( "Missing required parameters" )
         missing.each {
@@ -282,6 +305,12 @@ public class Parser {
       if( remainderError ) {
         writer.println( "Remainder validation error" )
         writer.println( "  $remainderError" )
+      }
+
+      if( postParseError ) {
+        writer.println( "" )
+        writer.println( "Post parse validation error" )
+        writer.println( "  $postParseError" )
       }
 
       writer.println( "" )
