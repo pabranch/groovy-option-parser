@@ -1,3 +1,7 @@
+0.11
+implement #9 - support for post-parsing validation.  A final validation of
+parsed parameters.  Allows validation of dependencies between paramaters.
+
 0.10
 implement #7 - remove GOPException in favor of plain ol' Exception
 fix #6 - limit length of default value in usage statement
