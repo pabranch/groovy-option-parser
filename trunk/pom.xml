@@ -38,10 +38,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.groovy.maven.runtime</groupId>
-      <artifactId>gmaven-runtime-default</artifactId>
-      <version>1.0-rc-3</version>
-      <scope>compile</scope>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all-minimal</artifactId>
+      <version>1.5.7</version>
+      <scope>provided</scope>
     </dependency> 
   </dependencies>
 
@@ -50,7 +50,7 @@
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0-rc-3</version>
+        <version>1.0-rc-4</version>
         <executions>
           <execution>
             <goals>
@@ -61,6 +61,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.easyb</groupId>
         <artifactId>maven-easyb-plugin</artifactId>
