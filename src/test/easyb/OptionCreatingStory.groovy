@@ -2,6 +2,19 @@ import org.computoring.gop.Parser
 
 description "Scenarios to validate the creation of options"
 
+scenario "creating an optional option without a shortName", {
+  given "a new parser", { parser = new Parser() }
+  when "creating an optional option without a shortName", {
+    parser.optional( null, "foo" )
+  }
+  then "the parser should have single option", {
+    parser.options.size().shouldBe( 1 )
+  }
+  and "the option should have a long name of 'foo'", {
+    parser.options.shouldHave( 'foo' )
+  }
+}
+
 scenario "creating a single optional option", {
   given "a new parser", { parser = new Parser() }
   when "creating a single optional option with only a shortName", { parser.optional( 'f' ) }
