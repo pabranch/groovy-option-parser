@@ -291,14 +291,16 @@ public class Parser {
       if( missing ) {
         writer.println( "Missing required parameters" )
         missing.each {
-          writer.println( "  ${( it.description ) ? "-$it.shortName $it.description" : "-$it.shortName"}" )
+          def option = it.shortName ? "-$it.shortName" : "--$it.longName"
+          writer.println( "  ${( it.description ) ? "$option $it.description" : "$option"}" )
         }
       }
 
       if( errors ) {
         writer.println( "Validation errors" )
         errors.each {
-          writer.println( "  -$it.shortName : ${it.error.toString()}" )
+          def option = it.shortName ? "-$it.shortName" : "--$it.longName"
+          writer.println( "  $option : ${it.error.toString()}" )
         }
       }
 
@@ -327,19 +329,22 @@ public class Parser {
       (x && x.metaClass.respondsTo(x, "size")) ? Math.max( max, x.size() ) : max
     }
 
-    def pattern = "  %s%-${longestName}s %-${longestDefault}s %s\n"
+    def pattern = "  %s%s%-${longestName}s %-${longestDefault}s %s\n"
     ['Required': requiredOptions, 'Optional': optionalOptions, 'Flags': flagOptions].each { header, map ->
       if( map ) {
         writer.println( header )
         map.each { name, opts ->
-          def shortName = "-$opts.shortName"
-          def longName = opts.longName ? ", --$opts.longName" : ""
+          def shortName = opts.shortName ? "-$opts.shortName" : "  "
+          def comma = (opts.shortName && opts.longName) ? ", " : "  "
+          def longName = opts.longName ? "--$opts.longName" : ""
+//          longName = (opts.longName && opts.shortName) ? ", $longName" : longName
           def defaultValue = (opts.default || opts.type == 'flag') ? "[${opts.default.toString()}]" : ""
           if(defaultValue.size() > defaultValueWidth) {
             defaultValue = "[${defaultValue[1..defaultValueWidth]}...]"
           }
           def description = opts.description ?: ""
-          writer.printf( pattern, shortName, longName, defaultValue, description)
+
+          writer.printf( pattern, shortName, comma, longName, defaultValue, description)
         }
 
         writer.println()
@@ -367,13 +372,13 @@ public class Parser {
         if( parameter.type == 'flag' ) value = value ? true : false
       }
       catch( Throwable t ) {
-        def x = options[parameter.shortName]
+        def x = options[parameter.shortName] ?: options[parameter.longName]
         x.error = t
         value = null
       }
     }
 
-    parameters[parameter.shortName] = value
+    if( parameter.shortName ) parameters[parameter.shortName] = value
     if( parameter.longName ) parameters[parameter.longName] = value
   }
 
@@ -391,7 +396,11 @@ public class Parser {
 
   private def findOptions( type ) {
     options.inject( [:] ) { map, option ->
-      if( option.value.type == type ) map[option.value.shortName] = option.value
+      if( option.value.type == type ) {
+        def name = option.value.shortName ?: option.value.longName
+        map[name] = option.value
+      }
+
       map
     }
   }
@@ -399,30 +408,40 @@ public class Parser {
   private def addOption( shortName, type, opts ) {
     opts = opts ?: [:]
 
-    if( !shortName ) {
-      throw new Exception( "Option name cannot not be null" )
+    if( !shortName && !opts.longName ) {
+      throw new Exception( "Not short or long name specified" )
     }
 
-    if( options[shortName] ) {
-      throw new Exception( "Dup option specified: $shortName" )
-    }
-
-    if( shortName.size() != 1 ) {
-      throw new Exception( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
-    }
-
-    if( opts.validate && !(opts.validate instanceof Closure) ) {
+    if( opts.validate && !(opts.validate instanceof Closure )) {
       throw new Exception( "Invalid validate option, must be a Closure" )
     }
 
+    if( shortName ) {
+      if( options[shortName] ) {
+        throw new Exception( "Dup option specified: $shortName" )
+      }
+
+      if( shortName.size() != 1 ) {
+        throw new Exception( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
+      }
+
+      opts.shortName = shortName
+      options[shortName] = opts
+    }
+
+    if( opts.longName ) {
+      if( options.containsKey(opts.longName)) {
+        throw new Exception( "Dup option specified: $opts.longName" )
+      }
+
+      options[opts.longName] = opts
+    }
+
     opts.type = type ?: 'optional'
-    opts.shortName = shortName
-    options[shortName] = opts
-    if( opts.longName ) options[opts.longName] = opts
 
     // create parameters for options with defaults
     if(opts.containsKey("default")) {
-      addParameter(options[shortName], opts.default)
+      addParameter(opts, opts.default)
     }
   }
 

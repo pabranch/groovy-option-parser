@@ -1,3 +1,15 @@
+1.0-rc-1
+Bump version to 1.0-rc-1 - if no one reports any issues real soon now.  This
+will become 1.0
+
+Bump gmaven to 1.0-rc-5
+
+Bump groovy version to 1.6.0 and specify dependency as provided.
+
+implement #10 - adding the possibility of having only a 'long' name
+It is now possible to define an option without a short name.  Pass null for
+the shortName to define an option without a short name.
+
 0.11
 implement #9 - support for post-parsing validation.  A final validation of
 parsed parameters.  Allows validation of dependencies between paramaters.
