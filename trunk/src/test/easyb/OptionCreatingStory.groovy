@@ -15,6 +15,62 @@ scenario "creating an optional option without a shortName", {
   }
 }
 
+scenario "creating an optional option without a name", {
+  given "a new parser", { parser = new Parser() }
+  when "creating an optional option without a name", {
+    action = { parser.optional( null ) }
+  }
+  then "an exception should be thrown", {
+    ensureThrows( Exception.class ) { action() }
+  }
+}
+
+scenario "creating a required option without a shortName", {
+  given "a new parser", { parser = new Parser() }
+  when "creating a required option without a shortName", {
+    parser.required( null, "foo" )
+  }
+  then "the parser should have single option", {
+    parser.options.size().shouldBe( 1 )
+  }
+  and "the option should have a long name of 'foo'", {
+    parser.options.shouldHave( 'foo' )
+  }
+}
+
+scenario "creating a required option without a name", {
+  given "a new parser", { parser = new Parser() }
+  when "creating a required option without a name", {
+    action = { parser.required( null ) }
+  }
+  then "an exception should be thrown", {
+    ensureThrows( Exception.class ) { action() }
+  }
+}
+
+scenario "creating a flag option without a shortName", {
+  given "a new parser", { parser = new Parser() }
+  when "creating a flag option without a shortName", {
+    parser.flag( null, "foo" )
+  }
+  then "the parser should have single option", {
+    parser.options.size().shouldBe( 1 )
+  }
+  and "the option should have a long name of 'foo'", {
+    parser.options.shouldHave( 'foo' )
+  }
+}
+
+scenario "creating a flag option without a name", {
+  given "a new parser", { parser = new Parser() }
+  when "creating a flag option without a name", {
+    action = { parser.flag( null ) }
+  }
+  then "an exception should be thrown", {
+    ensureThrows( Exception.class ) { action() }
+  }
+}
+
 scenario "creating a single optional option", {
   given "a new parser", { parser = new Parser() }
   when "creating a single optional option with only a shortName", { parser.optional( 'f' ) }
@@ -84,13 +140,26 @@ scenario "required options cannot have default values", {
   }
 }
 
-scenario "duplicate options not allowed", {
+scenario "duplicate short options not allowed", {
   given "a new parser with an option 'f'", {
     parser = new Parser()
     parser.optional( 'f' )
   }
   when "creating an additional option 'f'", {
     action = { parser.required( 'f' ) }
+  }
+  then "an exception should be thrown", {
+    ensureThrows( Exception.class ) { action() }
+  }
+}
+
+scenario "duplicate long options not allowed", {
+  given "a new parser with an option 'foo'", {
+    parser = new Parser()
+    parser.optional( null, 'foo' )
+  }
+  when "creating an additional option 'f'", {
+    action = { parser.required( null, 'foo' ) }
   }
   then "an exception should be thrown", {
     ensureThrows( Exception.class ) { action() }

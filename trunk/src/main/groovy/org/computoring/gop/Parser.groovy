@@ -86,6 +86,7 @@ public class Parser {
     if( opts.default ) {
       throw new Exception( "Default values don't make sense for required options" )
     }
+
     addOption( shortName, 'required', opts )
   }
 
