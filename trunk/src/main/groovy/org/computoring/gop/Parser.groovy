@@ -338,7 +338,6 @@ public class Parser {
           def shortName = opts.shortName ? "-$opts.shortName" : "  "
           def comma = (opts.shortName && opts.longName) ? ", " : "  "
           def longName = opts.longName ? "--$opts.longName" : ""
-//          longName = (opts.longName && opts.shortName) ? ", $longName" : longName
           def defaultValue = (opts.default || opts.type == 'flag') ? "[${opts.default.toString()}]" : ""
           if(defaultValue.size() > defaultValueWidth) {
             defaultValue = "[${defaultValue[1..defaultValueWidth]}...]"
