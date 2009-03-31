@@ -408,9 +408,22 @@ public class Parser {
 
   private def addOption( shortName, type, opts ) {
     opts = opts ?: [:]
+    opts.type = type ?: 'optional'
 
     if( !shortName && !opts.longName ) {
       throw new Exception( "Not short or long name specified" )
+    }
+
+    if( shortName && options.containsKey(shortName)) {
+      throw new Exception( "Dup option specified: $shortName" )
+    }
+
+    if( shortName && shortName.size() != 1 ) {
+      throw new Exception( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
+    }
+
+    if( opts.longName && options.containsKey(opts.longName)) {
+      throw new Exception( "Dup option specified: $opts.longName" )
     }
 
     if( opts.validate && !(opts.validate instanceof Closure )) {
@@ -418,27 +431,13 @@ public class Parser {
     }
 
     if( shortName ) {
-      if( options[shortName] ) {
-        throw new Exception( "Dup option specified: $shortName" )
-      }
-
-      if( shortName.size() != 1 ) {
-        throw new Exception( "Invalid option name: $shortName.  Option names must be a single character.  To set a long name for this option add [longName: 'long-name']" )
-      }
-
       opts.shortName = shortName
       options[shortName] = opts
     }
 
     if( opts.longName ) {
-      if( options.containsKey(opts.longName)) {
-        throw new Exception( "Dup option specified: $opts.longName" )
-      }
-
       options[opts.longName] = opts
     }
-
-    opts.type = type ?: 'optional'
 
     // create parameters for options with defaults
     if(opts.containsKey("default")) {

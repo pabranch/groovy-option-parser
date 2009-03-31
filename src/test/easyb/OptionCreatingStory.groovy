@@ -156,13 +156,16 @@ scenario "duplicate short options not allowed", {
 scenario "duplicate long options not allowed", {
   given "a new parser with an option 'foo'", {
     parser = new Parser()
-    parser.optional( null, 'foo' )
+    parser.optional( 'f', 'foo' )
   }
   when "creating an additional option 'f'", {
     action = { parser.required( null, 'foo' ) }
   }
   then "an exception should be thrown", {
     ensureThrows( Exception.class ) { action() }
+  }
+  and "there should only be ['f','foo'] options", {
+    parser.options.keySet().shouldBe(['f','foo'] as Set)
   }
 }
 
