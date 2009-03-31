@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.6.0</version>
+      <version>1.5.7</version>
       <scope>provided</scope>
     </dependency> 
   </dependencies>
@@ -50,7 +50,7 @@
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0-rc-5</version>
+        <version>1.0-rc-4</version>
         <executions>
           <execution>
             <goals>
