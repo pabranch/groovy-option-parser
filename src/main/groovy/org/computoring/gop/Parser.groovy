@@ -67,7 +67,8 @@ public class Parser {
    * Parameters must be supplied for each required option at parsing time.
    *
    * @param shortName
-   *        A single character name to use with for this option
+   *        A single character name to use with for this option.  Pass in <code>null</code> to specify
+   *        an option without a shortName.
    *
    * @param opts
    *        A map of additional options for this option.  Recognized options include:
@@ -104,7 +105,8 @@ public class Parser {
    * options may have a default value.
    *
    * @param shortName
-   *        A single character name to use with for this option
+   *        A single character name to use with for this option.  Pass in <code>null</code> to specify
+   *        an option without a shortName.
    *
    * @param opts
    *        A map of additional options for this option.  Recognized options include:
@@ -139,7 +141,8 @@ public class Parser {
    * them during parsing will make them true.  Default value can be changed to true, see below.
    *
    * @param shortName
-   *        A single character name to use with for this option
+   *        A single character name to use with for this option.  Pass in <code>null</code> to specify
+   *        an option without a shortName.
    *
    * @param opts
    *        A map of additional options for this option.  Recognized options include:
