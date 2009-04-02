@@ -214,7 +214,7 @@ public class Parser {
     def PARAM_NAME = ~/^(-[^-]|--.+)$/
     def parameter = null
     args.each { arg ->
-      if( remainder ) { 
+      if( remainder ) {
         remainder << arg
       }
       else if( parameter ) {
@@ -239,9 +239,13 @@ public class Parser {
         }
       }
       else {
-        if( !( arg == '--' )) remainder << arg
+        remainder << arg
+//        if( !( arg == '--' )) remainder << arg
       }
     }
+
+    // if we found -- to stop parsing, remove it
+    if( remainder[0] == '--' ) remainder = remainder[1..-1]
 
     if( missingOptions ) {
       throw new Exception( "Required parameters not provided" )

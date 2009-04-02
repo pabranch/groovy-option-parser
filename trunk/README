@@ -5,12 +5,14 @@ GOP is a command line option parsing alternative to !CliBuilder.
 I wrote GOP for a couple reasons:
  * Needed a small project to learn groovy
  * Replicate the option parsing behaviour of the excellent Ruby library, [http://github.com/alexvollmer/clip/tree/master. clip].  Clip makes it simple to define options and simple to use the parsed parameters.
+ * !CliBuilder is confusing and made me think too hard
 
 ==An example is the easiest explanation==
 {{{
- def parser = new org.computoring.gop.Parser(description: "An example parser.")
+ def parser = new org.computoring.gop.Parser(description: "An example parser demonstrating the features and uses of GOP.")
  parser.with {
    // support for required options
+   // required options cannot have default values, that doesn't make much sense
    required 'f', 'foo-bar', [description: 'A required option with a short name, a long name, and a description'] 
 
    // support for optional options
@@ -21,10 +23,13 @@ I wrote GOP for a couple reasons:
    ]
 
    // support for flag (boolean) options
-   flag 'c' // a flag option without a long name or a description, flags default to false
-   flag 'd', 'debug', [default: true]  // a flag option with a default value of true
+   flag 'c'  // a flag option without a long name or a description, flags default to false
+   flag 'd', 'debug', [
+     default: true,
+     description: 'a flag option with a default value of true'
+   ]
 
-   // short names are not required
+   // short names are not required, pass in null
    optional null, 'optional-long-opt', [ description: 'An optional option without a shortname.' ]
    required null, 'required-long-opt', [ description: 'A required option without a shortname.' ]
 
@@ -48,15 +53,18 @@ I wrote GOP for a couple reasons:
  // typically, I'll call parse like this.  If anything blows up I catch Exception and 
  // print the parser.usage to stderr and exit
  try {
+   // A script at this point would call parse with the command line args, 
+   //   def params = parser.parse(args)
    // '--' stops option parsing
-   def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
+   def params = parser.parse("-f foo_value --debug --count 123 --required-long-opt wookie -- --not-an-option some other stuff".split())
    assert params.'foo-bar' == 'foo_value'
    assert params.b == 'xyz'
    assert params.c == false
    assert params.debug == true
    assert params.count instanceof Integer
    assert params.i == 123
-   assert parser.remainder.join(' ') == 'some other stuff'
+   assert params.'required-long-opt' == 'wookie'
+   assert parser.remainder.join(' ') == '--not-an-option some other stuff'
  }
  catch( Exception e ) {
    System.err << parser.usage
@@ -66,18 +74,19 @@ I wrote GOP for a couple reasons:
                          
 The example above will generate usage output like this
 {{{
-An example parser.
+An example parser demonstrating the features and uses of GOP.
 Required
-  -f, --foo-bar              A required option with a short name, a long name, and a description
-  -i, --count                A required, validated option
+  -f, --foo-bar                       A required option with a short name, a long name, and a description
+      --required-long-opt             A required option without a shortname.
+  -i, --count                         A required, validated option
 
 Optional
-  -b, --bar-baz     [xyz]    An optional option with a short name, a long name, a default value, and a description
-      --long-opt             An optional option without a shortname.
+  -b, --bar-baz              [xyz]    An optional option with a short name, a long name, a default value, and a description
+      --optional-long-opt             An optional option without a shortname.
 
 Flags
-  -c                [false]  
-  -d, --debug       [true]   
+  -c                         [false]  
+  -d, --debug                [true]   a flag option with a default value of true
 }}}
 
 --------------------------------------------------------------------------------
@@ -87,8 +96,6 @@ Flags
  * Options can specify a validation closure that parsed values are passed through
  * remaining parameters after parsing can be validated
  * Formatted usage statement is created for you.
-
-*Drop me a note at travis@computoring.org if it's working for you or if it isn't.*
 
  * Homepage:      http://code.google.com/p/groovy-option-parser/
  * Downloads:     http://code.google.com/p/groovy-option-parser/downloads/list

@@ -49,10 +49,10 @@ scenario "remainder set after parsing options", {
 
 scenario "remainder set after encountering --", {
   given "a new parser", { parser = new Parser() }
-  and "an optional option 'f'", { parser.optional( 'f' ) }
-  when "parsing '-- bar baz'", { parser.parse( '-- bar baz'.split()) }
-  then "remainder should be ['bar','baz']", {
-    parser.remainder.shouldBe( ['bar','baz'] )
+  and "a required option 'f'", { parser.required( 'f' ) }
+  when "parsing '-f foo -- --bar baz'", { parser.parse( '-f foo -- --bar baz'.split()) }
+  then "remainder should be ['--bar','baz']", {
+    parser.remainder.shouldBe( ['--bar','baz'] )
   }
 }
 
