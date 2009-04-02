@@ -24,8 +24,9 @@ I wrote GOP for a couple reasons:
    flag 'c' // a flag option without a long name or a description, flags default to false
    flag 'd', 'debug', [default: true]  // a flag option with a default value of true
 
-   // option short names are not required
-   optional null, 'long-opt', [ description: 'An optional option without a shortname.' ]
+   // short names are not required
+   optional null, 'optional-long-opt', [ description: 'An optional option without a shortname.' ]
+   required null, 'required-long-opt', [ description: 'A required option without a shortname.' ]
 
    // support for parameter validation.  The parameter is passed to the validation closure.  The value
    // returned from the closure is assigned back to the option.
@@ -47,6 +48,7 @@ I wrote GOP for a couple reasons:
  // typically, I'll call parse like this.  If anything blows up I catch Exception and 
  // print the parser.usage to stderr and exit
  try {
+   // '--' stops option parsing
    def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
    assert params.'foo-bar' == 'foo_value'
    assert params.b == 'xyz'
