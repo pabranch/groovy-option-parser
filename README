@@ -10,53 +10,72 @@ I wrote GOP for a couple reasons:
 {{{
  def parser = new org.computoring.gop.Parser(description: "An example parser.")
  parser.with {
-   required 'f', 'foo-bar', [description: 'The foo-bar option'] 
+   // support for required options
+   required 'f', 'foo-bar', [description: 'A required option with a short name, a long name, and a description'] 
+
+   // support for optional options
    optional 'b', [
-     longName: 'bar-baz', 
+     longName: 'bar-baz',   // longName can be specified this way also
      default: 'xyz', 
-     description: 'The optional bar-baz option with a default of "xyz"'
+     description: 'An optional option with a short name, a long name, a default value, and a description'
    ]
-   flag 'c' 
-   flag 'd', 'debug', [default: true] 
+
+   // support for flag (boolean) options
+   flag 'c' // a flag option without a long name or a description, flags default to false
+   flag 'd', 'debug', [default: true]  // a flag option with a default value of true
+
+   // option short names are not required
+   optional null, 'long-opt', [ description: 'An optional option without a shortname.' ]
+
+   // support for parameter validation.  The parameter is passed to the validation closure.  The value
+   // returned from the closure is assigned back to the option.
    required 'i', 'count', [
      description: 'A required, validated option', 
      validate: {
-       Integer.parseInt it 
+       Integer.parseInt it  // the value of the parsed option with be an Integer in this case
      }
    ] 
 
-   // require a remainder
+   // support for remainder validation.  In this case a command is required after parameters.  The remainder is
+   // available after parsing as parser.remainder
    remainder {
      if(!it) throw new IllegalArgumentException("missing command")
      it
    }
  }
 
- def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
- assert params.'foo-bar' == 'foo_value'
- assert params.b == 'xyz'
- assert params.c == false
- assert params.debug == true
- assert params.count instanceof Integer
- assert params.i == 123
- assert parser.remainder.join(' ') == 'some other stuff'
+ // typically, I'll call parse like this.  If anything blows up I catch Exception and 
+ // print the parser.usage to stderr and exit
+ try {
+   def params = parser.parse("-f foo_value --debug --count 123 -- some other stuff".split())
+   assert params.'foo-bar' == 'foo_value'
+   assert params.b == 'xyz'
+   assert params.c == false
+   assert params.debug == true
+   assert params.count instanceof Integer
+   assert params.i == 123
+   assert parser.remainder.join(' ') == 'some other stuff'
+ }
+ catch( Exception e ) {
+   System.err << parser.usage
+   System.exit(1)
+ }
 }}}
                          
+The example above will generate usage output like this
 {{{
- System.out << parser.usage // will spit out a usage statement like this:
-
 An example parser.
-
 Required
-  -f, --foo-bar           The foo-bar option
-  -i, --count             A required, validated option
+  -f, --foo-bar              A required option with a short name, a long name, and a description
+  -i, --count                A required, validated option
 
 Optional
-  -b, --bar-baz  [xyz]    The optional bar-baz option with a default of "xyz"
+  -b, --bar-baz     [xyz]    An optional option with a short name, a long name, a default value, and a description
+      --long-opt             An optional option without a shortname.
 
 Flags
-  -c             [false]  
-  -d, --debug    [true]   
+  -c                [false]  
+  -d, --debug       [true]   
 }}}
 
 --------------------------------------------------------------------------------
