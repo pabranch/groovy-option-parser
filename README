@@ -26,7 +26,7 @@ I wrote GOP for a couple reasons:
    flag 'c'  // a flag option without a long name or a description, flags default to false
    flag 'd', 'debug', [
      default: true,
-     description: 'a flag option with a default value of true'
+     description: 'A flag option with a default value of true'
    ]
 
    // short names are not required, pass in null
@@ -42,8 +42,9 @@ I wrote GOP for a couple reasons:
      }
    ] 
 
-   // support for remainder validation.  In this case a command is required after parameters.  The remainder is
-   // available after parsing as parser.remainder
+   // Support for remainder validation.  Whatever is remaining after the options are parsed is passed into
+   // the remainder closure.  Whatever is returned from the closure is available as parser.remainder.
+   // In this case a command is required after parameters.
    remainder {
      if(!it) throw new IllegalArgumentException("missing command")
      it
@@ -57,13 +58,26 @@ I wrote GOP for a couple reasons:
    //   def params = parser.parse(args)
    // '--' stops option parsing
    def params = parser.parse("-f foo_value --debug --count 123 --required-long-opt wookie -- --not-an-option some other stuff".split())
+
+   // parsed as -f, referenced here as params.'foo-bar'
    assert params.'foo-bar' == 'foo_value'
+
+   // -b not supplied, 'xyz' is the default value
    assert params.b == 'xyz'
+
+   // -c not supplied, flag options default to false
    assert params.c == false
+
+   // --debug was supplied and flag option set to true
    assert params.debug == true
+
+   // -i and --count validate and convert their parsed value into an Integer
    assert params.count instanceof Integer
    assert params.i == 123
+
    assert params.'required-long-opt' == 'wookie'
+
+   // verify the remainder contains everything after '--'
    assert parser.remainder.join(' ') == '--not-an-option some other stuff'
  }
  catch( Exception e ) {
@@ -86,7 +100,7 @@ Optional
 
 Flags
   -c                         [false]  
-  -d, --debug                [true]   a flag option with a default value of true
+  -d, --debug                [true]   A flag option with a default value of true
 }}}
 
 --------------------------------------------------------------------------------
